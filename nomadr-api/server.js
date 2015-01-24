@@ -47,7 +47,6 @@ router.get('/', function(request, response) {
 // we only have a users route for now
 
 router.route('/users')
-// route.route('/users/:user_id')
 
 
 .post(function(request, response) {
@@ -55,7 +54,9 @@ router.route('/users')
   console.log(request)
 
   var user = new User();
-  user.name = request.body.name;
+  user.name   = request.body.name;
+  user.email  = request.body.email;
+  user.city   = request.body.city;
 
   user.save(function(error){
     if (error)
@@ -78,15 +79,18 @@ router.route('/users')
   })
 })
 
-// .get(function(request, response){
-//   console.log('doing a get request')
-//   User.findById(function(error, users){
-//     if (error)
-//       response.send(error)
-//     // else
-//       response.json(users)
-//   })
-// })
+router.route('/users/:user_id')
+
+.get(function(request, response){
+  // console.log('REQUEST BODY: ' + request.body)
+  User.findById(request.params.user_id, function(error, user){
+  // User.find({'email': request.params.email}, function(error, user){
+    if (error)
+      response.send(error)
+    // else
+      response.json(user)
+  })
+})
 
 
 

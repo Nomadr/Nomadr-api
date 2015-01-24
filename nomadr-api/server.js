@@ -8,6 +8,8 @@
 
 var mongoose = require('mongoose')
 
+mongoose.connect(process.env.MONGO_URL)
+
 var User = require('./app/models/user')
 
 // call the packages we need
@@ -45,7 +47,7 @@ router.get('/', function(request, response) {
 // we only have a users route for now
 
 router.route('/users')
-route.route('/users/:user_id')
+// route.route('/users/:user_id')
 
 
 .post(function(request, response) {

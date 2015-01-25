@@ -12,4 +12,4 @@ var UserSchema = new Schema({
 })
 
 userSchema.plugin(uniqueValidator)
-module.exports = mongoose.model('User', UserSchema)
+module.exports = mongoose.model('User', userSchema)

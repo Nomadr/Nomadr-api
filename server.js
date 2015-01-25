@@ -21,6 +21,19 @@ var bodyParser = require('body-parser');
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(function(request, response, next) {
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+app.get('/', function(request, response, next) {
+  // Handle the get for this route
+});
+app.post('/', function(request, response, next) {
+ // Handle the post for this route
+});
+
+
 
 var port = process.env.PORT || 8080;        // set our port
 

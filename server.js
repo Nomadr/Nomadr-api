@@ -78,16 +78,6 @@ router.route('/users')
   })
 })
 
-.get(function(request, response){
-  console.log('doing a get request')
-  User.find(function(error, users){
-    if (error)
-      response.send(error)
-    // else
-      response.json(users)
-  })
-})
-
 router.route('/users/:user_id')
 
 .get(function(request, response){

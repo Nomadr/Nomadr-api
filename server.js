@@ -1,12 +1,12 @@
-
 // BASE SETUP
 // =============================================================================
 
 // connect to the database
 
 
-
+var googleKey = process.env.GOOGLE_API
 var mongoose = require('mongoose')
+var http = require('request')
 
 mongoose.connect(process.env.MONGO_URL)
 
@@ -35,7 +35,7 @@ app.post('/', function(request, response, next) {
 
 
 
-var port = process.env.PORT || 8080;        // set our port
+var port = process.env.PORT || 9090;        // set our port
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -51,7 +51,6 @@ router.get('/', function(request, response) {
     response.json({ message: 'hooray! welcome to our api!' });
 });
 
-// more routes for our API will happen here
 
 // User routes
 // -------------------
@@ -60,7 +59,6 @@ router.get('/', function(request, response) {
 // we only have a users route for now
 
 router.route('/users')
-
 
 .post(function(request, response) {
   console.log('doing a get request')
@@ -76,8 +74,6 @@ router.route('/users')
       response.send(error)
     // TODO: ERROR HANDLING AT THE DATABASE
 
-    // console.log(response)
-    // console.log(error)
     response.json({ message: 'User created!'})
   })
 })
@@ -95,9 +91,7 @@ router.route('/users')
 router.route('/users/:user_id')
 
 .get(function(request, response){
-  // console.log('REQUEST BODY: ' + request.body)
   User.findById(request.params.user_id, function(error, user){
-  // User.find({'email': request.params.email}, function(error, user){
     if (error)
       response.send(error)
     // else
@@ -105,7 +99,78 @@ router.route('/users/:user_id')
   })
 })
 
+// Routes to access other APIs.
 
+router.route('/city/:city_name')
+.get(function(request, response){
+  // http({
+  //   method: 'GET',
+  //   url:    'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
+  //   headers: {
+  //     "User-Agent":"request",
+  //     "Authorization":googleKey
+  //   },
+  //   params:
+  //     {
+  //       key:        googleKey,
+  //       radius:     '5000',
+  //       location:   '-33.8670522,151.1957362'
+  //     }
+  // }, function(error, response, body){
+  //   console.log(body)
+  // }
+  // )
+  console.log("Requesting city data")
+  var city = request.params.city_name
+  var latLong = '48.859650,2.343455'
+
+  // FIXME:  Need to gather the response data from all API calls and formulate the json response for this .get route
+  var getWiki = (function(){
+      return {
+        get: function(){
+          var wikiRequest = function(){
+            http({
+              url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+city+'&continue=',
+              method:"GET"},
+
+              function(error, response, body){
+                var wiki_data = JSON.parse(body)
+                var wiki_page_key = Object.keys(wiki_data.query.pages)
+                var wiki_content = wiki_data.query.pages[wiki_page_key].extract
+                // console.log(wiki_key[0])
+                // console.log(wiki_data.query.pages[wiki_page_key].extract)
+                // console.log(wiki_content);
+                return wiki_content;
+          })
+          }
+          return "Returned city data only if you can get iffis to work";
+        }
+      }
+    }
+  )();
+
+  http({
+    url:'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAsmkkWTdFUhw8rXGd_Qa4rwTo-Bv80F_A&location='+ latLong +'&radius=5000﻿',
+    method:"GET"
+  },function(error, response, body){
+    var photoKey = JSON.parse(body).results[4].photos[0].photo_reference
+    // DONT NEED TO MAKE THIS API CALL? JUST USE THE URL BELOW AS THE BACKGROUND IMAGE...
+    http({
+      url: 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference='+photoKey+'&key='+googleKey,
+      method: 'GET'
+    },function(error, response, body){
+      //This is an actualy photo file. Can we get an URL?
+      // console.log(body)
+      console.log('photo will render when we fix it')
+    }
+    )
+  })
+
+  // response.json({message: "success!" + request.params.city_name})
+
+  // TODO: Package your json and send the data here.
+  response.json({wiki_content: getWiki.get()})
+})
 
 
 

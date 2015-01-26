@@ -7,9 +7,10 @@ var UserSchema = new Schema({
   // FIXME: need to implement uniqueness validator for email
   // Mongoose doesn't have one natively but there is a package
   // for it
+  email: {type: String, required: true},
   email: {type: String, required: true, unique: true},
-  city: {type: String, required: true}
+  // city: {type: String, required: true}
 })
 
-userSchema.plugin(uniqueValidator)
-module.exports = mongoose.model('User', userSchema)
+UserSchema.plugin(uniqueValidator)
+module.exports = mongoose.model('User', UserSchema)

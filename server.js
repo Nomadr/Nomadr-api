@@ -120,16 +120,17 @@ router.route('/city/:city_name')
   //   console.log(body)
   // }
   // )
-  var city = "chicago"
+
+  var city = request.params.city_name
   var latLong = '48.859650,2.343455'
 
-  // http({
-  //   url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+city+'&continue=',
-  //   method:"GET",
-  //   headers:{"User-Agent":"blah"}
-  //   },function(error, response, body){
-  //   console.log(body)
-  // }),
+  http({
+    url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+city+'&continue=',
+    method:"GET",
+    },function(error, response, body){
+    console.log(JSON.parse(body).query.pages)
+    // response.json(JSON.parse(body))
+  })
 
   http({
     url:'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAsmkkWTdFUhw8rXGd_Qa4rwTo-Bv80F_A&location='+ latLong +'&radius=5000﻿',
@@ -143,7 +144,7 @@ router.route('/city/:city_name')
     },function(error, response, body){
       //This is an actualy photo file. Can we get an URL?
       // console.log(body)
-      console.log(response)
+      console.log('photo will render when we fix it')
     }
     )
   })

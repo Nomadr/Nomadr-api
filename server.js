@@ -70,13 +70,14 @@ router.route('/users')
   user.name   = request.body.name;
   user.email  = request.body.email;
   user.city   = request.body.city;
+  user.coordinates = request.body.coordinates
 
   user.save(function(error){
     if (error)
-      response.send(error)
+      response.json({ message: "yall fucked up"} )
+    else
     // TODO: ERROR HANDLING AT THE DATABASE
-
-    response.json({ message: 'User created!'})
+      response.json({ message: user })
   })
 })
 
@@ -86,7 +87,7 @@ router.route('/users/:user_id')
   User.findById(request.params.user_id, function(error, user){
     if (error)
       response.send(error)
-    // else
+    else
       response.json(user)
   })
 })
@@ -124,7 +125,7 @@ router.route('/google_photo/:user_id')
       else
         console.log(user.city)
         var userCity = user.city //Have this pull lat long (rather than city) from db and plug into url.
-        var latLong = '25.766943, -80.195289' //this is dummy data
+        var latLong = '25.768643,-80.194516' //this is dummy data
           http({
             url:'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAsmkkWTdFUhw8rXGd_Qa4rwTo-Bv80F_A&location='+ latLong +'&radius=50000﻿',
             method:"GET"

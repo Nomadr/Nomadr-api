@@ -120,16 +120,23 @@ router.route('/city/:city_name')
   //   console.log(body)
   // }
   // )
-
+  console.log("Requesting city data")
   var city = request.params.city_name
   var latLong = '48.859650,2.343455'
 
   http({
     url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+city+'&continue=',
-    method:"GET",
+    method:"GET"
+    // contentType: "application/json"
     },function(error, response, body){
-    console.log(JSON.parse(body).query.pages)
-    // response.json(JSON.parse(body))
+      // console.log(body)
+    // console.log(JSON.stringify(body))
+    var wiki_data = JSON.parse(body)
+    var wiki_page_key = Object.keys(wiki_data.query.pages)
+    var wiki_content = wiki_data.query.pages[wiki_page_key].extract
+    // console.log(wiki_key[0])
+    // console.log(wiki_data.query.pages[wiki_page_key].extract)
+    console.log(wiki_content)
   })
 
   http({
@@ -150,9 +157,9 @@ router.route('/city/:city_name')
   })
 
   // response.json({message: "success!" + request.params.city_name})
-})
 
-    // url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Paris&continue=',
+  // TODO: Package your json and send the data here.
+})
 
 
 

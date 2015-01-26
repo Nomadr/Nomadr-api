@@ -1,12 +1,12 @@
-
 // BASE SETUP
 // =============================================================================
 
 // connect to the database
 
 
-
+var googleKey = process.env.GOOGLE_KEY
 var mongoose = require('mongoose')
+var http = require('request')
 
 mongoose.connect(process.env.MONGO_URL)
 
@@ -35,7 +35,7 @@ app.post('/', function(request, response, next) {
 
 
 
-var port = process.env.PORT || 8080;        // set our port
+var port = process.env.PORT || 9090;        // set our port
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -51,7 +51,6 @@ router.get('/', function(request, response) {
     response.json({ message: 'hooray! welcome to our api!' });
 });
 
-// more routes for our API will happen here
 
 // User routes
 // -------------------
@@ -60,7 +59,6 @@ router.get('/', function(request, response) {
 // we only have a users route for now
 
 router.route('/users')
-
 
 .post(function(request, response) {
   console.log('doing a get request')
@@ -76,8 +74,6 @@ router.route('/users')
       response.send(error)
     // TODO: ERROR HANDLING AT THE DATABASE
 
-    // console.log(response)
-    // console.log(error)
     response.json({ message: 'User created!'})
   })
 })
@@ -95,14 +91,52 @@ router.route('/users')
 router.route('/users/:user_id')
 
 .get(function(request, response){
-  // console.log('REQUEST BODY: ' + request.body)
   User.findById(request.params.user_id, function(error, user){
-  // User.find({'email': request.params.email}, function(error, user){
     if (error)
       response.send(error)
     // else
       response.json(user)
   })
+})
+
+// Routes to access other APIs.
+
+router.route('/city/:city_name')
+.get(function(request, response){
+  http({
+    method: 'GET',
+    url:    'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
+    params:
+      {
+        key:        googleKey,
+        radius:     '5000',
+        location:   '-33.8670522,151.1957362'
+      }
+  }).on('response', function(response) {
+    console.log(response)
+  }).on('fail', function(error) {
+    console.log(error)
+    console.log("whoat")
+  })
+
+  // jQuery.ajax({
+  //     url: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
+  //     method: 'GET',
+  //     headers: {},
+  //     params: {
+  //         location: '-33.8670522,151.1957362',
+  //         radius: '5000',
+  //         key: googleKey
+  //     }
+  // }).done(function(response){
+  //   console.log(response)
+  //   response.json(response)
+  // }).fail(function(error){
+  //   console.log(error)
+  // })
+
+
+  // response.json({message: "success!" + request.params.city_name})
 })
 
 

@@ -4,7 +4,7 @@
 // connect to the database
 
 
-var googleKey = process.env.GOOGLE_KEY
+var googleKey = process.env.GOOGLE_API
 var mongoose = require('mongoose')
 var http = require('request')
 
@@ -103,43 +103,45 @@ router.route('/users/:user_id')
 
 router.route('/city/:city_name')
 .get(function(request, response){
-  http({
-    method: 'GET',
-    url:    'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
-    params:
-      {
-        key:        googleKey,
-        radius:     '5000',
-        location:   '-33.8670522,151.1957362'
-      }
-  }).on('response', function(response) {
-    console.log(response)
-  }).on('fail', function(error) {
-    console.log(error)
-    console.log("whoat")
-  })
-
-  // jQuery.ajax({
-  //     url: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
-  //     method: 'GET',
-  //     headers: {},
-  //     params: {
-  //         location: '-33.8670522,151.1957362',
-  //         radius: '5000',
-  //         key: googleKey
+  // http({
+  //   method: 'GET',
+  //   url:    'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
+  //   headers: {
+  //     "User-Agent":"request",
+  //     "Authorization":googleKey
+  //   },
+  //   params:
+  //     {
+  //       key:        googleKey,
+  //       radius:     '5000',
+  //       location:   '-33.8670522,151.1957362'
   //     }
-  // }).done(function(response){
-  //   console.log(response)
-  //   response.json(response)
-  // }).fail(function(error){
-  //   console.log(error)
-  // })
+  // }, function(error, response, body){
+  //   console.log(body)
+  // }
+  // )
+  var city = "chicago"
+  var latLong = '48.859650,2.343455'
 
+  http({
+    url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+city+'&continue=',
+    method:"GET",
+    headers:{"User-Agent":"blah"}
+    },function(error, response, body){
+    console.log(body)
+  }),
+
+  http({
+    url:'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAsmkkWTdFUhw8rXGd_Qa4rwTo-Bv80F_A&location='+ latLong +'&radius=5000﻿',
+    method:"GET"
+  },function(error, response, body){
+    console.log(body)
+  })
 
   // response.json({message: "success!" + request.params.city_name})
 })
 
-
+    // url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles=Paris&continue=',
 
 
 

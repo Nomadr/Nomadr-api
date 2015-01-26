@@ -5,6 +5,7 @@
 
 
 var googleKey = process.env.GOOGLE_API
+console.log("KEY "+process.env.GOOGLE_API)
 var mongoose = require('mongoose')
 var http = require('request')
 
@@ -58,6 +59,7 @@ router.get('/', function(request, response) {
 // creates /api/users route
 // we only have a users route for now
 
+//ALL USERS
 router.route('/users')
 
 .post(function(request, response) {
@@ -88,6 +90,7 @@ router.route('/users')
   })
 })
 
+//SPECIFIC USER
 router.route('/users/:user_id')
 
 .get(function(request, response){
@@ -99,78 +102,61 @@ router.route('/users/:user_id')
   })
 })
 
-// Routes to access other APIs.
+// ROUTES FOR EACH API:
 
-router.route('/city/:city_name')
-.get(function(request, response){
-  // http({
-  //   method: 'GET',
-  //   url:    'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
-  //   headers: {
-  //     "User-Agent":"request",
-  //     "Authorization":googleKey
-  //   },
-  //   params:
-  //     {
-  //       key:        googleKey,
-  //       radius:     '5000',
-  //       location:   '-33.8670522,151.1957362'
-  //     }
-  // }, function(error, response, body){
-  //   console.log(body)
-  // }
-  // )
-  console.log("Requesting city data")
-  var city = request.params.city_name
-  var latLong = '48.859650,2.343455'
-
-  // FIXME:  Need to gather the response data from all API calls and formulate the json response for this .get route
-  var getWiki = (function(){
-      return {
-        get: function(){
-          var wikiRequest = function(){
+//WIKI ROUTE
+router.route('/wiki/:user_id')
+  .get(function(request, response){
+    User.findById(request.params.user_id, function(error, user){
+      if (error)
+        response.send(error)
+      else
+        console.log(user.city)
+        var userCity = user.city
             http({
-              url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+city+'&continue=',
+              url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+user.city+'&continue=',
               method:"GET"},
-
-              function(error, response, body){
+              function(error, res, body){
                 var wiki_data = JSON.parse(body)
                 var wiki_page_key = Object.keys(wiki_data.query.pages)
                 var wiki_content = wiki_data.query.pages[wiki_page_key].extract
-                // console.log(wiki_key[0])
-                // console.log(wiki_data.query.pages[wiki_page_key].extract)
-                // console.log(wiki_content);
-                return wiki_content;
-          })
-          }
-          return "Returned city data only if you can get iffis to work";
-        }
-      }
-    }
-  )();
-
-  http({
-    url:'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAsmkkWTdFUhw8rXGd_Qa4rwTo-Bv80F_A&location='+ latLong +'&radius=5000﻿',
-    method:"GET"
-  },function(error, response, body){
-    var photoKey = JSON.parse(body).results[4].photos[0].photo_reference
-    // DONT NEED TO MAKE THIS API CALL? JUST USE THE URL BELOW AS THE BACKGROUND IMAGE...
-    http({
-      url: 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference='+photoKey+'&key='+googleKey,
-      method: 'GET'
-    },function(error, response, body){
-      //This is an actualy photo file. Can we get an URL?
-      // console.log(body)
-      console.log('photo will render when we fix it')
-    }
-    )
+                response.json({wiki_content: wiki_content})
+            })
+    })
   })
 
-  // response.json({message: "success!" + request.params.city_name})
+//PHOTO ROUTE
 
-  // TODO: Package your json and send the data here.
-  response.json({wiki_content: getWiki.get()})
-})
+router.route('/google_photo/:user_id')
+  .get(function(request, response){
+    User.findById(request.params.user_id, function(error, user){
+      if (error)
+        response.send(error)
+      else
+        console.log(user.city)
+        var userCity = user.city //Have this pull lat long (rather than city) from db and plug into url.
+        var latLong = '25.766943, -80.195289' //this is dummy data
+          http({
+            url:'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAsmkkWTdFUhw8rXGd_Qa4rwTo-Bv80F_A&location='+ latLong +'&radius=50000﻿',
+            method:"GET"
+          },function(error, res, body){
+            var arr = JSON.parse(body).results
+            var photoArr = []
+            for (var i=0;i<arr.length;i++){
+              if (arr[i].photos !== undefined){
+                if (arr[i].photos[0]['width'] > 1000) {
+                  photoArr.push(arr[i].photos[0]['photo_reference'])
+                }
+              }
+            }
+            var photoUrlArr = []
+            for (var i=0;i<photoArr.length;i++){
+              photoUrlArr.push('https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference='+photoArr[i]+'&key='+googleKey+'')
+            }
+            response.json({photos: photoUrlArr})
+          })
+    })
+  })
 
 
 

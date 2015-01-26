@@ -123,19 +123,29 @@ router.route('/city/:city_name')
   var city = "chicago"
   var latLong = '48.859650,2.343455'
 
-  http({
-    url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+city+'&continue=',
-    method:"GET",
-    headers:{"User-Agent":"blah"}
-    },function(error, response, body){
-    console.log(body)
-  }),
+  // http({
+  //   url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+city+'&continue=',
+  //   method:"GET",
+  //   headers:{"User-Agent":"blah"}
+  //   },function(error, response, body){
+  //   console.log(body)
+  // }),
 
   http({
     url:'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAsmkkWTdFUhw8rXGd_Qa4rwTo-Bv80F_A&location='+ latLong +'&radius=5000﻿',
     method:"GET"
   },function(error, response, body){
-    console.log(body)
+    var photoKey = JSON.parse(body).results[4].photos[0].photo_reference
+    // DONT NEED TO MAKE THIS API CALL? JUST USE THE URL BELOW AS THE BACKGROUND IMAGE...
+    http({
+      url: 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1600&photoreference='+photoKey+'&key='+googleKey,
+      method: 'GET'
+    },function(error, response, body){
+      //This is an actualy photo file. Can we get an URL?
+      // console.log(body)
+      console.log(response)
+    }
+    )
   })
 
   // response.json({message: "success!" + request.params.city_name})

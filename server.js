@@ -58,6 +58,7 @@ router.get('/', function(request, response) {
 // creates /api/users route
 // we only have a users route for now
 
+//ALL USERS
 router.route('/users')
 
 .post(function(request, response) {
@@ -88,6 +89,7 @@ router.route('/users')
   })
 })
 
+//SPECIFIC USER
 router.route('/users/:user_id')
 
 .get(function(request, response){
@@ -99,7 +101,22 @@ router.route('/users/:user_id')
   })
 })
 
-// Routes to access other APIs.
+// ROUTES FOR EACH API:
+
+router.route('/wiki/:user_id')
+  .get(function(request, response){
+    User.findById(request.params.user_id, function(error, user){
+      if (error)
+        response.send(error)
+      else
+        // response.json(user)
+        // myUser = JSON.parse(user)
+        console.log(user.city)
+        // user.city
+    })
+  })
+
+
 
 router.route('/city/:city_name')
 .get(function(request, response){

@@ -55,10 +55,7 @@ router.get('/', function(request, response) {
 // User routes
 // -------------------
 
-// creates /api/users route
-// we only have a users route for now
-
-//ALL USERS
+//  POST USER:
 router.route('/users')
 
 .post(function(request, response) {
@@ -95,11 +92,10 @@ router.route('/users')
       }
     })
   }
-
   getUserGeocoordinates(request.body.city)
-
 })
 
+//  GET SPECIFIC USER
 router.route('/users/:user_id')
 
 .get(function(request, response){
@@ -112,8 +108,9 @@ router.route('/users/:user_id')
 })
 
 // ROUTES FOR EACH API:
+//______________________________________________________________________
 
-//WIKI ROUTE
+//WIKI ROUTE:
 router.route('/wiki/:user_id')
   .get(function(request, response){
     User.findById(request.params.user_id, function(error, user){
@@ -134,7 +131,7 @@ router.route('/wiki/:user_id')
     })
   })
 
-//PHOTO ROUTE
+// GOOGLE PHOTO ROUTE:
 
 router.route('/google_photo/:user_id')
   .get(function(request, response){
@@ -142,11 +139,10 @@ router.route('/google_photo/:user_id')
       if (error)
         response.send(error)
       else
-        console.log(user.city)
-        var userCity = user.city //Have this pull lat long (rather than city) from db and plug into url.
-        var latLong = '25.766943, -80.195289' //this is dummy data
+        console.log(user.geocoordinates)
+        var latLong = user.geocoordinates
           http({
-            url:'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAsmkkWTdFUhw8rXGd_Qa4rwTo-Bv80F_A&location='+ latLong +'&radius=50000﻿',
+            url:'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyAsmkkWTdFUhw8rXGd_Qa4rwTo-Bv80F_A&location='+latLong+'&radius=50000﻿',
             method:"GET"
           },function(error, res, body){
             var arr = JSON.parse(body).results
@@ -166,8 +162,6 @@ router.route('/google_photo/:user_id')
           })
     })
   })
-
-
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api

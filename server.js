@@ -67,15 +67,11 @@ router.route('/users')
 
   var getUserGeocoordinates = function(city) {
     geocoder.geocode(city, function(results, status){
-      console.log(status.results[0].geometry.location)
+      // console.log(status.results[0].geometry.location)
       if (true) {
-        // console.log(results[0].geometry)
-        // var coords = results[0].geometry.location;
-        // var latLg = ''+coords['k']+','+coords['D']+''
-
-        // console.log(latLg)
-        // response.send("hey!" + city + " " + latLg)
-        return latLg
+        var latLg = status.results[0].geometry.location
+        // var latLongString = latLg
+        return (latLg.lat + "," + latLg.lng+"")
       } else {
         console.log('Geocode was not successful for the following reason: ' + status);
       }

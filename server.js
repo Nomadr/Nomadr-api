@@ -2,8 +2,7 @@
 // =============================================================================
 
 // connect to the database
-
-
+var geocoder = require('geocoder')
 var googleKey = process.env.GOOGLE_API
 console.log("KEY "+process.env.GOOGLE_API)
 var mongoose = require('mongoose')
@@ -66,17 +65,39 @@ router.route('/users')
   console.log('doing a get request')
   console.log(request)
 
-  var user = new User();
-  user.name   = request.body.name;
-  user.email  = request.body.email;
-  user.city   = request.body.city;
+  var getUserGeocoordinates = function(city) {
+    geocoder.geocode(city,function(results, status){
+      console.log(status)
+      if (true) {
+        var coords = results[0].geometry.location;
+        var latLg = ''+coords['k']+','+coords['D']+''
+
+        console.log(latLg)
+        return latLg
+      } else {
+        console.log('Geocode was not successful for the following reason: ' + status);
+      }
+    })
+  }
+
+  // .then(function(){
+  //   user.save
+  // })
+
+  getUserGeocoordinates("Amsterdam")
+
+  // var user            = new User();
+  // user.name           = request.body.name;
+  // user.email          = request.body.email;
+  // user.city           = request.body.city;
+  // user.geocoordinates = getUserGeocoordinates(user.city);
+
 
   user.save(function(error){
     if (error)
       response.send(error)
-    // TODO: ERROR HANDLING AT THE DATABASE
-
-    response.json({ message: 'User created!'})
+    else
+      response.json({ message: 'User created!'})
   })
 })
 

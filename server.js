@@ -107,6 +107,21 @@ router.route('/users/:user_id')
   })
 })
 
+//  GET USER BY EMAIL
+//  Accepts user_email as params and returns a user object.
+//  Note: email attribute is unique to all users.
+router.route('/emails/:user_email')
+
+.get(function(request, response){
+  User.findOne({ email:request.params.user_email}, function(error, user){
+    if (error)
+      response.send(error)
+    // else
+      response.json(user)
+  })
+})
+
+
 // ROUTES FOR EACH API:
 //______________________________________________________________________
 
@@ -118,7 +133,7 @@ router.route('/wiki/:user_id')
         response.send(error)
       else
         console.log(user.city)
-        var userCity = user.city
+        var userCity = user.city // NEED TO TURN THIS INTO QUERY STRING (IF IT'S A CITY WITH TWO WORDS (CANT HAVE SPACES))
             http({
               url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+user.city+'&continue=',
               method:"GET"},

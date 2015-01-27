@@ -63,16 +63,18 @@ router.route('/users')
 
 .post(function(request, response) {
   console.log('doing a get request')
-  console.log(request)
+  // console.log(request)
 
   var getUserGeocoordinates = function(city) {
-    geocoder.geocode(city,function(results, status){
-      console.log(status)
+    geocoder.geocode(city, function(results, status){
+      console.log(status.results[0].geometry.location)
       if (true) {
-        var coords = results[0].geometry.location;
-        var latLg = ''+coords['k']+','+coords['D']+''
+        // console.log(results[0].geometry)
+        // var coords = results[0].geometry.location;
+        // var latLg = ''+coords['k']+','+coords['D']+''
 
-        console.log(latLg)
+        // console.log(latLg)
+        // response.send("hey!" + city + " " + latLg)
         return latLg
       } else {
         console.log('Geocode was not successful for the following reason: ' + status);
@@ -84,7 +86,7 @@ router.route('/users')
   //   user.save
   // })
 
-  getUserGeocoordinates("Amsterdam")
+  getUserGeocoordinates("Seattle")
 
   // var user            = new User();
   // user.name           = request.body.name;
@@ -93,12 +95,12 @@ router.route('/users')
   // user.geocoordinates = getUserGeocoordinates(user.city);
 
 
-  user.save(function(error){
-    if (error)
-      response.send(error)
-    else
-      response.json({ message: 'User created!'})
-  })
+  // user.save(function(error){
+  //   if (error)
+  //     response.send(error)
+  //   else
+  //     response.json({ message: 'User created!'})
+  // })
 })
 
 router.route('/users/:user_id')

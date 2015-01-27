@@ -62,8 +62,23 @@ router.get('/', function(request, response) {
 router.route('/users')
 
 .post(function(request, response) {
-  console.log('doing a get request')
-  // console.log(request)
+
+  var postUser = function(coordinates) {
+    var user            = new User();
+    user.name           = request.body.name;
+    user.email          = request.body.email;
+    user.city           = request.body.city;
+    user.geocoordinates = coordinates;
+
+    user.save(function(error){
+      if (error)
+        response.send(error)
+      else
+        response.json({ message: 'User created!',
+                        user: user
+                      })
+    })
+  }
 
   var getUserGeocoordinates = function(city) {
     geocoder.geocode(city, function(results, status){
@@ -71,32 +86,18 @@ router.route('/users')
       if (true) {
         var latLg = status.results[0].geometry.location
         // var latLongString = latLg
-        return (latLg.lat + "," + latLg.lng+"")
+        // console.log(latLg.lat + "," + latLg.lng+"")
+        var coords = (latLg.lat + "," + latLg.lng)
+        // barf
+        postUser(coords)
       } else {
         console.log('Geocode was not successful for the following reason: ' + status);
       }
     })
   }
 
-  // .then(function(){
-  //   user.save
-  // })
+  getUserGeocoordinates(request.body.city)
 
-  getUserGeocoordinates("Seattle")
-
-  // var user            = new User();
-  // user.name           = request.body.name;
-  // user.email          = request.body.email;
-  // user.city           = request.body.city;
-  // user.geocoordinates = getUserGeocoordinates(user.city);
-
-
-  // user.save(function(error){
-  //   if (error)
-  //     response.send(error)
-  //   else
-  //     response.json({ message: 'User created!'})
-  // })
 })
 
 router.route('/users/:user_id')

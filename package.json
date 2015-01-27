@@ -6,6 +6,7 @@
         "mongoose": "~3.6.13",
         "mongoose-unique-validator": "~0.4.0",
         "body-parser": "~1.0.1",
-        "request": "2.51.0"
+        "request": "2.51.0",
+        "geocoder": "~0.2.0"
     }
 }

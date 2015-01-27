@@ -2,8 +2,7 @@
 // =============================================================================
 
 // connect to the database
-
-
+var geocoder = require('geocoder')
 var googleKey = process.env.GOOGLE_API
 console.log("KEY "+process.env.GOOGLE_API)
 var mongoose = require('mongoose')
@@ -63,21 +62,42 @@ router.get('/', function(request, response) {
 router.route('/users')
 
 .post(function(request, response) {
-  console.log('doing a get request')
-  console.log(request)
 
-  var user = new User();
-  user.name   = request.body.name;
-  user.email  = request.body.email;
-  user.city   = request.body.city;
+  var postUser = function(coordinates) {
+    var user            = new User();
+    user.name           = request.body.name;
+    user.email          = request.body.email;
+    user.city           = request.body.city;
+    user.geocoordinates = coordinates;
 
-  user.save(function(error){
-    if (error)
-      response.send(error)
-    // TODO: ERROR HANDLING AT THE DATABASE
+    user.save(function(error){
+      if (error)
+        response.send(error)
+      else
+        response.json({ message: 'User created!',
+                        user: user
+                      })
+    })
+  }
 
-    response.json({ message: 'User created!'})
-  })
+  var getUserGeocoordinates = function(city) {
+    geocoder.geocode(city, function(results, status){
+      // console.log(status.results[0].geometry.location)
+      if (true) {
+        var latLg = status.results[0].geometry.location
+        // var latLongString = latLg
+        // console.log(latLg.lat + "," + latLg.lng+"")
+        var coords = (latLg.lat + "," + latLg.lng)
+        // barf
+        postUser(coords)
+      } else {
+        console.log('Geocode was not successful for the following reason: ' + status);
+      }
+    })
+  }
+
+  getUserGeocoordinates(request.body.city)
+
 })
 
 router.route('/users/:user_id')

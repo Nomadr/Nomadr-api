@@ -67,6 +67,7 @@ router.route('/users')
     user.name           = request.body.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     user.email          = request.body.email;
     user.city           = request.body.city.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});;
+    user.departureDate  = request.body.departureDate
     user.geocoordinates = coordinates;
 
     user.save(function(error){

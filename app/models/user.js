@@ -6,6 +6,7 @@ var UserSchema = new Schema({
   name: {type: String, required: true},
   email: {type: String, required: true, unique: true},
   city: {type: String, required: true},
+  departureDate: {type: String, required: true},
   geocoordinates: {type: String, required: true}
 })
 

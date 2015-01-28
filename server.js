@@ -62,9 +62,11 @@ router.route('/users')
 
   var postUser = function(coordinates) {
     var user            = new User();
-    user.name           = request.body.name;
+    user.name           = request.body.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     user.email          = request.body.email;
-    user.city           = request.body.city;
+
+    // This will fix capitalization for input'd cities.
+    user.city           = request.body.city.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});;
     user.geocoordinates = coordinates;
 
     user.save(function(error){

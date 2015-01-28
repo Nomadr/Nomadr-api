@@ -141,7 +141,7 @@ router.route('/wiki/:user_id')
         console.log(user.city)
         var userCity = user.city // NEED TO TURN THIS INTO QUERY STRING (IF IT'S A CITY WITH TWO WORDS (CANT HAVE SPACES))
             http({
-              url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&titles='+user.city+'&continue=',
+              url:'http://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&redirects&titles='+user.city+'&continue=',
               method:"GET"},
               function(error, res, body){
                 var wiki_data = JSON.parse(body)

@@ -206,7 +206,27 @@ router.route('/panaramio/:user_id')
             method:"GET"
           },function(error, res, body){
             console.log(JSON.parse(body).photos[0].photo_file_url)
-            response.json({photos: JSON.parse(body)})
+            var photoArr = JSON.parse(body).photos
+            var filteredPhotos = []
+
+            for (var i = 0; i < photoArr.length; i++) {
+              if (photoArr[i].width > 1000 && photoArr[i].width < 2000) {
+                filteredPhotos.push(photoArr[i])
+              }
+            }
+            var photoListCollection = []
+            for (var i=0;i<filteredPhotos.length;i++){
+              photoListCollection.push({
+                photo_title:  filteredPhotos[i].photo_title,
+                photo_url:    filteredPhotos[i].photo_file_url,
+                owner_name:   filteredPhotos[i].owner_name,
+                owner_url:    filteredPhotos[i].owner_url
+              })
+            }
+
+
+
+            response.json({photos: photoListCollection})
           })
     })
   })

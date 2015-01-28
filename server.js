@@ -4,7 +4,9 @@
 // connect to the database
 var geocoder = require('geocoder')
 var googleKey = process.env.GOOGLE_API
-console.log("KEY "+process.env.GOOGLE_API)
+// NOTE TO VINCENT! ASK PHIL FOR EVENTBRIGHT KEY TO PUT IN HEROKU
+var eventBrightKey = process.env.EVENTBRIGHT_API
+console.log("eventbright key: "+eventBrightKey)
 var mongoose = require('mongoose')
 var http = require('request')
 
@@ -181,7 +183,7 @@ router.route('/google_photo/:user_id')
     })
   })
 
-//Time.time.com.com.time.net.tim
+//TIME ROUTE:
 
 router.route('/time/:user_id')
   .get(function(request, response) {
@@ -196,6 +198,25 @@ router.route('/time/:user_id')
       }, function(error, res, body){
         // FFFFF
         response.json({time: JSON.parse(body).time.substring(11)})
+      })
+    })
+  })
+
+
+//EVENTBRIGHT ROUTE
+router.route('/events/:user_id')
+  .get(function(request, response){
+    console.lot("hey")
+    User.findById(request.params.user_id, function(error, user){
+      console.log(user)
+      http({
+        url: 'https://www.eventbrite.com/json/event_search?app_key='+eventBrightKey+'&city='+user.city+'&date=This+month', //change this date to be their entered departure date?
+        method: "GET"
+      }, function(error, res, body){
+        console.log(res)
+        console.log(body)
+        //debug this: what to send back? on the front end, we want event name wrapped in url
+        response.json({events: body.events})
       })
     })
   })

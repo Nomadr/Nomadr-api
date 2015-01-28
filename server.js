@@ -184,6 +184,33 @@ router.route('/google_photo/:user_id')
     })
   })
 
+// PANARAMIO PHOTO ROUTE:
+
+router.route('/panaramio/:user_id')
+  .get(function(request, response){
+    User.findById(request.params.user_id, function(error, user){
+      if (error)
+        response.send(error)
+      else
+        console.log(user.geocoordinates)
+        var lat     = user.geocoordinates.split(",")[0]
+        var lng     = user.geocoordinates.split(",")[1]
+
+        var latMin  = (parseFloat(lat) - 0.5).toString()
+        var latMax  = (parseFloat(lat) + 0.5).toString()
+        var lngMin  = (parseFloat(lng) - 0.5).toString()
+        var lngMax  = (parseFloat(lng) + 0.5).toString()
+
+          http({
+            url:'http://www.panoramio.com/map/get_panoramas.php?set=public&from=0&to=20&minx='+lngMin+'&miny='+latMin+'&maxx='+lngMax+'&maxy='+latMax+'&size=original&mapfilter=false',
+            method:"GET"
+          },function(error, res, body){
+            console.log(JSON.parse(body).photos[0].photo_file_url)
+            response.json({photos: JSON.parse(body)})
+          })
+    })
+  })
+
 //TIME ROUTE:
 
 router.route('/time/:user_id')

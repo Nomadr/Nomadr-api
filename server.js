@@ -206,7 +206,7 @@ router.route('/time/:user_id')
 //EVENTBRIGHT ROUTE
 router.route('/events/:user_id')
   .get(function(request, response){
-    console.lot("hey")
+    console.log("hey")
     User.findById(request.params.user_id, function(error, user){
       console.log(user)
       http({

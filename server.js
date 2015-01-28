@@ -231,6 +231,21 @@ router.route('/panaramio/:user_id')
     })
   })
 
+//WEATHER ROUTE:
+
+router.route('/weather/:user_id')
+  .get(function(request, response) {
+    User.findById(request.params.user_id, function(error, user){
+      var city = user.city
+      http({
+        url: 'http://api.openweathermap.org/data/2.5/weather?q='+city+'',
+        method: "GET"
+      }, function(error, res, body){
+        response.json({weather: body})
+      })
+    })
+  })
+
 //TIME ROUTE:
 
 router.route('/time/:user_id')

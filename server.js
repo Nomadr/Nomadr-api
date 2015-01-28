@@ -61,11 +61,11 @@ router.route('/users')
 .post(function(request, response) {
 
   var postUser = function(coordinates) {
+
+    // The regex capitalizes the name and city properly.
     var user            = new User();
     user.name           = request.body.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     user.email          = request.body.email;
-
-    // This will fix capitalization for input'd cities.
     user.city           = request.body.city.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});;
     user.geocoordinates = coordinates;
 
@@ -73,9 +73,10 @@ router.route('/users')
       if (error)
         response.send(error)
       else
-        response.json({ message: 'User created!',
-                        user: user
-                      })
+        response.json({
+          message:  'User created!',
+          user:     user
+        })
     })
   }
 
@@ -177,6 +178,25 @@ router.route('/google_photo/:user_id')
             }
             response.json({photos: photoUrlArr})
           })
+    })
+  })
+
+//Time.time.com.com.time.net.tim
+
+router.route('/time/:user_id')
+  .get(function(request, response) {
+
+    User.findById(request.params.user_id, function(error, user){
+      var coordArr = user.geocoordinates.split(",")
+      var lat = coordArr[0]
+      var lng = coordArr[1]
+      http({
+        url: 'http://api.geonames.org/timezoneJSON?lat='+lat+'&lng='+lng+'&username=fantastic_nomadr',
+        method: "GET"
+      }, function(error, res, body){
+        // FFFFF
+        response.json({time: JSON.parse(body).time.substring(11)})
+      })
     })
   })
 

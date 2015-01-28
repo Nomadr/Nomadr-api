@@ -190,14 +190,12 @@ router.route('/time/:user_id')
       var coordArr = user.geocoordinates.split(",")
       var lat = coordArr[0]
       var lng = coordArr[1]
-      console.log("you're in the time route!")
-      console.log(lat + " " + lng)
       http({
         url: 'http://api.geonames.org/timezoneJSON?lat='+lat+'&lng='+lng+'&username=fantastic_nomadr',
         method: "GET"
-      }, function(error, res, body){]
+      }, function(error, res, body){
         // FFFFF
-        response.json({time: JSON.parse(body).time})
+        response.json({time: JSON.parse(body).time.substring(11)})
       })
     })
   })

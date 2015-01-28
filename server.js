@@ -67,7 +67,7 @@ router.route('/users')
     // The regex capitalizes the name and city properly.
     var user            = new User();
     user.name           = request.body.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
-    user.email          = request.body.email;
+    user.email          = request.body.email.toLowerCase();
     user.city           = request.body.city.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});;
     user.geocoordinates = coordinates;
 
@@ -118,7 +118,7 @@ router.route('/users/:user_id')
 router.route('/emails/:user_email')
 
 .get(function(request, response){
-  User.findOne({ email:request.params.user_email}, function(error, user){
+  User.findOne({ email:request.params.user_email.toLowerCase()}, function(error, user){
     if (error)
       response.send(error)
     // else

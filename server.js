@@ -292,7 +292,9 @@ router.route('/events/:user_id')
   router.route('/flights/:user_id')
     .get(function(request, response){
       console.log("hey")
-      function getFirstCode() {
+
+
+      function getSecondCode() {
         User.findById(request.params.user_id, function(error, user){
           var coordArr = user.geocoordinates.split(",")
           var lat = coordArr[0]
@@ -300,38 +302,49 @@ router.route('/events/:user_id')
           http({
             url: "https://airport.api.aero/airport/nearest/" + lat + "/"+lng+"?maxAirports=1&user_key=" + aeroKey
           }, function(error, res, body){
-            console.log(body)
             function callback(x) {
               return x
             }
             var parsedCallBack = eval(body)
+            // response.json(parsedCallBack.airports[0].code)
+            console.log(parsedCallBack.airports[0].code + ' hii')
+            function getFlightInfo(data) {
+              console.log(data)
+              http({
+                url: "https://www.googleapis.com/qpxExpress/v1/trips/search/",
+                method: "POST",
+                code: {"request": {
+    "passengers": {
+      "adultCount": 1
+    },
+    "slice": [
+      {
+        "origin": "SFO",
+        "destination": data,
+        "date": "2015-01-30"
+      }
+    ]
+  }}
 
-            response.json(parsedCallBack.airports[0].code)
+              }, function(error, res, body) {
+                console.log(error + 'GTI error')
+                console.log(res + "GTI RES")
+                console.log(body + "GTI BODY")
+              })
+            }
+
+            getFlightInfo(eval(body).airports[0].code)
           })
         })
       }
+      getSecondCode()
+      // console.log(a('hi'))
+      // console.log(getSecondCode(a) + '321 reached')
 
-      var firstPort = getFirstCode()
-      console.log(firstPort)
 
-      // console.log(getFirstCode())
+      // response.json(getFlightInfo())
 
-      // User.findById(request.params.user_id, function(error, user){
-      //   console.log(user)
-      //   http({
-      //     url: 'https://www.eventbrite.com/json/event_search?app_key='+eventBrightKey+'&city='+user.city+'&date=This+month', //change this date to be their entered departure date?
-      //     method: "GET"
-      //   }, function(error, res, body){
-      //     console.log(res)
-      //     console.log(body)
-      //     //debug this: what to send back? on the front end, we want event name wrapped in url
-      //     response.json({events: body.events})
-      //   })
-      // })
 
-      // var first_city = http({
-      //   url: "https://airport.api.aero/airport/nearest/" +  + "/"-122.4167?maxAirports=2&user_key=28053d9717e2740e4c43f56584118599"
-      // })
   })
 
 // REGISTER OUR ROUTES -------------------------------

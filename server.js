@@ -241,7 +241,7 @@ router.route('/weather/:user_id')
         url: 'http://api.openweathermap.org/data/2.5/weather?q='+city+'',
         method: "GET"
       }, function(error, res, body){
-        response.json({weather: body})
+        response.json({weather: JSON.parse(body)})
       })
     })
   })

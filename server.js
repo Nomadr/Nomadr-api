@@ -269,17 +269,17 @@ router.route('/time/:user_id')
 //EVENTBRIGHT ROUTE
 router.route('/events/:user_id')
   .get(function(request, response){
-    console.log("hey")
     User.findById(request.params.user_id, function(error, user){
-      console.log(user)
       http({
-        url: 'https://www.eventbrite.com/json/event_search?app_key='+eventBrightKey+'&city='+user.city+'&date=This+month', //change this date to be their entered departure date?
-        method: "GET"
-      }, function(error, res, body){
-        console.log(res)
-        console.log(body)
-        //debug this: what to send back? on the front end, we want event name wrapped in url
-        response.json({events: body.events})
+        url: 'https://www.eventbrite.com/json/event_search?app_key=3ZGWXRYIQQ5VZLFMR4&city=San%20Francisco&date=This+month',
+        method: 'GET'
+        // 'https://www.eventbrite.com/json/event_search?app_key=3ZGWXRYIQQ5VZLFMR4&city=San%20Francisco&date=This+month',
+      }, function(error, resp, body){
+        // console.log(JSON.parse(body))
+        // console.log(body['events'])
+        var yea = JSON.parse(body)
+        // response.json(resp.request)
+        response.json(yea.events)
       })
     })
   })

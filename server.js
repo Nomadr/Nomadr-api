@@ -205,10 +205,9 @@ router.route('/panaramio/:user_id')
             url:'http://www.panoramio.com/map/get_panoramas.php?set=public&from=0&to=20&minx='+lngMin+'&miny='+latMin+'&maxx='+lngMax+'&maxy='+latMax+'&size=original&mapfilter=false',
             method:"GET"
           },function(error, res, body){
-            console.log(JSON.parse(body).photos[0].photo_file_url)
+            // console.log(JSON.parse(body).photos[0].photo_file_url)
             var photoArr = JSON.parse(body).photos
             var filteredPhotos = []
-
             for (var i = 0; i < photoArr.length; i++) {
               if (photoArr[i].width > 1000 && photoArr[i].width < 2000) {
                 filteredPhotos.push(photoArr[i])
@@ -223,9 +222,6 @@ router.route('/panaramio/:user_id')
                 owner_url:    filteredPhotos[i].owner_url
               })
             }
-
-
-
             response.json({photos: photoListCollection})
           })
     })
@@ -265,21 +261,28 @@ router.route('/time/:user_id')
     })
   })
 
-
 //EVENTBRIGHT ROUTE
 router.route('/events/:user_id')
   .get(function(request, response){
-    console.log("hey")
+    console.log(request.params.user_id)
     User.findById(request.params.user_id, function(error, user){
-      console.log(user)
+
       http({
-        url: 'https://www.eventbrite.com/json/event_search?app_key='+eventBrightKey+'&city='+user.city+'&date=This+month', //change this date to be their entered departure date?
-        method: "GET"
-      }, function(error, res, body){
-        console.log(res)
-        console.log(body)
-        //debug this: what to send back? on the front end, we want event name wrapped in url
-        response.json({events: body.events})
+        url: 'https://www.eventbrite.com/json/event_search?app_key=' + eventBrightKey + '&city=' + user.city + '&date=This+month',
+        method: 'GET'
+      }, function(error, resp, body){
+        var eventArr = JSON.parse(body)
+        eventArr.events.shift()
+        var filteredArr = []
+
+        // console.log(eventArr.events)
+        for(var i=0;i<eventArr.events.length;i++){
+          filteredArr.push({
+            url:    eventArr.events[i].event.url,
+            title:  eventArr.events[i].event.title
+          })
+        }
+        response.json({events: filteredArr})
       })
     })
   })

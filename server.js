@@ -264,11 +264,11 @@ router.route('/time/:user_id')
 //EVENTBRIGHT ROUTE
 router.route('/events/:user_id')
   .get(function(request, response){
+    console.log(request.params.user_id)
     User.findById(request.params.user_id, function(error, user){
 
-
       http({
-        url: 'https://www.eventbrite.com/json/event_search?app_key=' + eventBrightKey + '&city=San%20Francisco&date=This+month',
+        url: 'https://www.eventbrite.com/json/event_search?app_key=' + eventBrightKey + '&city=' + user.city + '&date=This+month',
         method: 'GET'
       }, function(error, resp, body){
         var eventArr = JSON.parse(body)

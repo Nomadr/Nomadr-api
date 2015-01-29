@@ -68,7 +68,7 @@ router.route('/users')
     var user            = new User();
     user.name           = request.body.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     user.email          = request.body.email.toLowerCase();
-    user.city           = request.body.city.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});;
+    user.city           = request.body.city.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
     user.departureDate  = request.body.departureDate
     user.geocoordinates = coordinates;
 
@@ -181,6 +181,68 @@ router.route('/google_photo/:user_id')
             }
             response.json({photos: photoUrlArr})
           })
+    })
+  })
+
+// PANARAMIO PHOTO ROUTE:
+
+router.route('/panaramio/:user_id')
+  .get(function(request, response){
+    User.findById(request.params.user_id, function(error, user){
+      if (error)
+        response.send(error)
+      else
+        console.log(user.geocoordinates)
+        var lat     = user.geocoordinates.split(",")[0]
+        var lng     = user.geocoordinates.split(",")[1]
+
+        var latMin  = (parseFloat(lat) - 0.5).toString()
+        var latMax  = (parseFloat(lat) + 0.5).toString()
+        var lngMin  = (parseFloat(lng) - 0.5).toString()
+        var lngMax  = (parseFloat(lng) + 0.5).toString()
+
+          http({
+            url:'http://www.panoramio.com/map/get_panoramas.php?set=public&from=0&to=20&minx='+lngMin+'&miny='+latMin+'&maxx='+lngMax+'&maxy='+latMax+'&size=original&mapfilter=false',
+            method:"GET"
+          },function(error, res, body){
+            console.log(JSON.parse(body).photos[0].photo_file_url)
+            var photoArr = JSON.parse(body).photos
+            var filteredPhotos = []
+
+            for (var i = 0; i < photoArr.length; i++) {
+              if (photoArr[i].width > 1000 && photoArr[i].width < 2000) {
+                filteredPhotos.push(photoArr[i])
+              }
+            }
+            var photoListCollection = []
+            for (var i=0;i<filteredPhotos.length;i++){
+              photoListCollection.push({
+                photo_title:  filteredPhotos[i].photo_title,
+                photo_url:    filteredPhotos[i].photo_file_url,
+                owner_name:   filteredPhotos[i].owner_name,
+                owner_url:    filteredPhotos[i].owner_url
+              })
+            }
+
+
+
+            response.json({photos: photoListCollection})
+          })
+    })
+  })
+
+//WEATHER ROUTE:
+
+router.route('/weather/:user_id')
+  .get(function(request, response) {
+    User.findById(request.params.user_id, function(error, user){
+      var city = user.city
+      http({
+        url: 'http://api.openweathermap.org/data/2.5/weather?q='+city+'',
+        method: "GET"
+      }, function(error, res, body){
+        response.json({weather: JSON.parse(body)})
+      })
     })
   })
 

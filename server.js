@@ -288,51 +288,47 @@ router.route('/events/:user_id')
     })
   })
 
-// BEGIN FLIGHT SHIT
-// BEGIN FLIGHT SHIT
-// BEGIN FLIGHT SHIT
-// BEGIN FLIGHT SHIT
-
 //FLIGHTS ROUTE
+  router.route('/flights/:user_id')
+    .get(function(request, response){
+      console.log("hey")
+      User.findById(request.params.user_id, function(error, user){
+        var coordArr = user.geocoordinates.split(",")
+        var lat = coordArr[0]
+        var lng = coordArr[1]
+        http({
+          url: "https://airport.api.aero/airport/nearest/" + lat + "/"+lng+"?maxAirports=2&user_key=" + aeroKey
+        }, function(error, res, body){
+          console.log(body)
+          function callback(x) {
+            return x
+          }
+          var hi = eval(body)
+          console.log(hi)
 
-router.route('/flights/:user_id')
-  .get(function(request, response){
-    console.log("hey")
-    User.findById(request.params.user_id, function(error, user){
-      var coordArr = user.geocoordinates.split(",")
-      var lat = coordArr[0]
-      var lng = coordArr[1]
-      http({
-        url: "https://airport.api.aero/airport/nearest/" + lat + "/"+lng+"?maxAirports=2&user_key=" + aeroKey
-      }, function(error, res, body){
-        console.log(body)
-        return body
+
+          response.json({blah: body})
+        })
       })
-    })
-    console.log()
+      console.log()
 
-    // User.findById(request.params.user_id, function(error, user){
-    //   console.log(user)
-    //   http({
-    //     url: 'https://www.eventbrite.com/json/event_search?app_key='+eventBrightKey+'&city='+user.city+'&date=This+month', //change this date to be their entered departure date?
-    //     method: "GET"
-    //   }, function(error, res, body){
-    //     console.log(res)
-    //     console.log(body)
-    //     //debug this: what to send back? on the front end, we want event name wrapped in url
-    //     response.json({events: body.events})
-    //   })
-    // })
+      // User.findById(request.params.user_id, function(error, user){
+      //   console.log(user)
+      //   http({
+      //     url: 'https://www.eventbrite.com/json/event_search?app_key='+eventBrightKey+'&city='+user.city+'&date=This+month', //change this date to be their entered departure date?
+      //     method: "GET"
+      //   }, function(error, res, body){
+      //     console.log(res)
+      //     console.log(body)
+      //     //debug this: what to send back? on the front end, we want event name wrapped in url
+      //     response.json({events: body.events})
+      //   })
+      // })
 
-    // var first_city = http({
-    //   url: "https://airport.api.aero/airport/nearest/" +  + "/"-122.4167?maxAirports=2&user_key=28053d9717e2740e4c43f56584118599"
-    // })
+      // var first_city = http({
+      //   url: "https://airport.api.aero/airport/nearest/" +  + "/"-122.4167?maxAirports=2&user_key=28053d9717e2740e4c43f56584118599"
+      // })
   })
-
-// END FLIGHT SHIT
-// END FLIGHT SHIT
-// END FLIGHT SHIT
-// END FLIGHT SHIT
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api

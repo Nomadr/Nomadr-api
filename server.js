@@ -7,6 +7,10 @@ var googleKey = process.env.GOOGLE_API
 // NOTE TO VINCENT! ASK PHIL FOR EVENTBRIGHT KEY TO PUT IN HEROKU
 var eventBrightKey = process.env.EVENTBRIGHT_API
 console.log("eventbright key: "+eventBrightKey)
+
+var aeroKey = process.env.AERO_API
+console.log('aerokey '+aeroKey)
+
 var mongoose = require('mongoose')
 var http = require('request')
 

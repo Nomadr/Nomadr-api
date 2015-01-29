@@ -292,25 +292,29 @@ router.route('/events/:user_id')
   router.route('/flights/:user_id')
     .get(function(request, response){
       console.log("hey")
-      User.findById(request.params.user_id, function(error, user){
-        var coordArr = user.geocoordinates.split(",")
-        var lat = coordArr[0]
-        var lng = coordArr[1]
-        http({
-          url: "https://airport.api.aero/airport/nearest/" + lat + "/"+lng+"?maxAirports=2&user_key=" + aeroKey
-        }, function(error, res, body){
-          console.log(body)
-          function callback(x) {
-            return x
-          }
-          var hi = eval(body)
-          console.log(hi)
+      function getFirstCode() {
+        User.findById(request.params.user_id, function(error, user){
+          var coordArr = user.geocoordinates.split(",")
+          var lat = coordArr[0]
+          var lng = coordArr[1]
+          http({
+            url: "https://airport.api.aero/airport/nearest/" + lat + "/"+lng+"?maxAirports=1&user_key=" + aeroKey
+          }, function(error, res, body){
+            console.log(body)
+            function callback(x) {
+              return x
+            }
+            var parsedCallBack = eval(body)
 
-
-          response.json({blah: body})
+            response.json(parsedCallBack.airports[0].code)
+          })
         })
-      })
-      console.log()
+      }
+
+      var firstPort = getFirstCode()
+      console.log(firstPort)
+
+      // console.log(getFirstCode())
 
       // User.findById(request.params.user_id, function(error, user){
       //   console.log(user)
